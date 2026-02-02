@@ -21,31 +21,32 @@ This project follows a **deterministic-first philosophy**: core logic, data pipe
 
 ---
 
-## 🧱 Current Architecture
+<h2>🧱 Current Architecture</h2>
 
+<pre>
 MarketPulse_AI/
-│
 ├── Backend/
-│ ├── app/
-│ │ ├── chat/
-│ │ │ ├── intents.py # Intent taxonomy & detection logic
-│ │ │ ├── tools.py # Deterministic backend tools (data-only)
-│ │ │ ├── formatter.py # Response formatting & safety guardrails
-│ │ │ ├── router.py # Chat API endpoint
-│ │ │ └── prompts.py # Reserved for future LLM integration
-│ │ │
-│ │ ├── market.py # Market data logic
-│ │ ├── news.py # Financial news ingestion
-│ │ ├── sentiment.py # Sentiment analysis (VADER)
-│ │ ├── trading.py # ML signals & backtesting logic
-│ │ ├── config.py
-│ │ └── main.py # FastAPI entry point
-│ │
-│ ├── ML/ # ML experiments and trained models
-│ └── requirements.txt
+│   ├── app/
+│   │   ├── chat/
+│   │   │   ├── intents.py        # Intent taxonomy & detection logic
+│   │   │   ├── tools.py          # Deterministic backend tools (data-only)
+│   │   │   ├── formatter.py     # Response formatting & safety guardrails
+│   │   │   ├── router.py        # Chat API endpoint
+│   │   │   └── prompts.py       # Reserved for future LLM integration
+│   │   │
+│   │   ├── market.py            # Market data logic
+│   │   ├── news.py              # Financial news ingestion
+│   │   ├── sentiment.py         # Sentiment analysis (VADER)
+│   │   ├── trading.py           # ML signals & backtesting logic
+│   │   ├── config.py
+│   │   └── main.py              # FastAPI entry point
+│   │
+│   ├── ML/                      # ML experiments and trained models
+│   └── requirements.txt
 │
-├── chatbot_scope.md # Explicit chatbot safety scope
+├── chatbot_scope.md             # Explicit chatbot safety scope
 └── README.md
+</pre>
 
 ---
 
