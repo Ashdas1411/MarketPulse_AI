@@ -19,9 +19,7 @@ class IntentResult:
     entities: Dict[str, str]
 
 
-# -------------------------------
 # Keyword maps
-# -------------------------------
 
 INTENT_KEYWORDS = {
     ChatIntent.MARKET_OVERVIEW: [
@@ -42,9 +40,8 @@ INTENT_KEYWORDS = {
 }
 
 
-# -------------------------------
+
 # Intent detection
-# -------------------------------
 
 def detect_intent(message: str) -> IntentResult:
     if not message:
