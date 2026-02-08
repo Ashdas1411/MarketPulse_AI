@@ -8,10 +8,10 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.news import fetch_business_news
 from app.ai import explain_trading_signal
 
-# Create router
+# Creating router
 router = APIRouter()
 
-# Load trained ML artifacts ONCE (at startup)
+# Loading trained ML artifacts ONCE (at startup)
 model = joblib.load("ML/trading_model.pkl")
 label_encoder = joblib.load("ML/label_encoder.pkl")
 
@@ -27,7 +27,7 @@ def trading_signal():
     and an LLM-generated explanation.
     """
 
-    # 1. Fetch market data
+    # 1. Fetching market data
     ticker = yf.Ticker("^GSPC")
     data = ticker.history(period="1d")
 
@@ -42,7 +42,7 @@ def trading_signal():
 
     change_percent = ((close_price - open_price) / open_price) * 100
 
-    # 2. Fetch news and compute average sentiment
+    # 2. Fetching news and compute average sentiment
     news_data = fetch_business_news()
     sentiment_scores = []
 
@@ -55,14 +55,14 @@ def trading_signal():
         if sentiment_scores else 0
     )
 
-    # 3. Prepare ML input (same feature order as training)
+    # 3. Preparing ML input (same feature order as training)
     X = np.array([[change_percent, avg_sentiment]])
 
-    # 4. Predict class
+    # 4. Predicting class
     prediction = model.predict(X)[0]
     signal = label_encoder.inverse_transform([prediction])[0]
 
-    # 5. Predict confidence scores
+    # 5. Predicting confidence scores
     probabilities = model.predict_proba(X)[0]
     class_labels = label_encoder.classes_
 
@@ -71,7 +71,7 @@ def trading_signal():
         for i in range(len(class_labels))
     }
 
-    # 6. Generate LLM explanation
+    # 6. Generating LLM explanation
     explanation = explain_trading_signal(
         signal=signal,
         confidence=confidence_scores,
@@ -79,7 +79,7 @@ def trading_signal():
         avg_sentiment=round(avg_sentiment, 3)
     )
 
-    # 7. Return response
+    # 7. Returning response
     return {
         "status": "ok",
         "signal": signal,
