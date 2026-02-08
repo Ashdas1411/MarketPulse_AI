@@ -4,19 +4,15 @@ import pandas as pd
 import numpy as np
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# ============================================================
-# 1. Load trained ML artifacts
-# ============================================================
 
+# 1. Loading trained ML artifacts
 model = joblib.load("ML/trading_model.pkl")
 label_encoder = joblib.load("ML/label_encoder.pkl")
 
 analyzer = SentimentIntensityAnalyzer()
 
-# ============================================================
-# 2. Backtest parameters
-# ============================================================
 
+# 2. Backtesting parameters
 START_CAPITAL = 100000
 capital = START_CAPITAL
 position = 0  # +1 = long, -1 = short, 0 = cash
@@ -25,28 +21,22 @@ results = []
 
 print("Starting backtest...")
 
-# ============================================================
-# 3. Fetch historical market data
-# ============================================================
 
+# 3. Fetching historical market data
 ticker = yf.Ticker("^GSPC")
 data = ticker.history(period="6mo", interval="1d")
 
 if data.empty:
     raise RuntimeError("No historical data available")
 
-# ============================================================
-# 4. Walk-forward backtest (NO look-ahead bias)
-# ============================================================
 
+# 4. Walk-forward backtesting (NO look-ahead bias)
 for i in range(1, len(data)):
     today = data.iloc[i]
     yesterday = data.iloc[i - 1]
 
-    # --------------------------------------------------------
-    # A. Features must come from YESTERDAY
-    # --------------------------------------------------------
 
+    # A. Features must come from YESTERDAY
     yesterday_return = (
         yesterday["Close"] - yesterday["Open"]
     ) / yesterday["Open"]
@@ -55,17 +45,13 @@ for i in range(1, len(data)):
 
     X = np.array([[yesterday_return * 100, avg_sentiment]])
 
-    # --------------------------------------------------------
-    # B. Predict trading signal
-    # --------------------------------------------------------
-
+   
+    # B. Predicting trading signal
     prediction = model.predict(X)[0]
     signal = label_encoder.inverse_transform([prediction])[0]
 
-    # --------------------------------------------------------
+   
     # C. Position logic (decision for TODAY)
-    # --------------------------------------------------------
-
     if signal == "BUY":
         position = 1
     elif signal == "SELL":
@@ -73,20 +59,16 @@ for i in range(1, len(data)):
     else:
         position = 0
 
-    # --------------------------------------------------------
-    # D. Apply TODAY'S market return
-    # --------------------------------------------------------
-
+    
+    # D. Applying TODAY'S market return
     today_return = (
         today["Close"] - today["Open"]
     ) / today["Open"]
 
     capital *= (1 + position * today_return)
 
-    # --------------------------------------------------------
-    # E. Store results
-    # --------------------------------------------------------
-
+   
+    # E. Storing results
     results.append({
         "date": today.name,
         "signal": signal,
@@ -95,19 +77,15 @@ for i in range(1, len(data)):
         "capital": capital
     })
 
-# ============================================================
-# 5. Save backtest results
-# ============================================================
 
+# 5. Saving backtest results
 df = pd.DataFrame(results)
 df.to_csv("ML/backtest_results.csv", index=False)
 
 print("Backtest results saved to ML/backtest_results.csv")
 
-# ============================================================
-# 6. Performance metrics
-# ============================================================
 
+# 6. Performance metrics
 total_return = (capital - START_CAPITAL) / START_CAPITAL * 100
 win_days = df[df["capital"].diff() > 0].shape[0]
 total_days = df.shape[0]
