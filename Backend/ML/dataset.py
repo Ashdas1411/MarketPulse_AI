@@ -32,7 +32,7 @@ def generate_dataset(
     and simulated sentiment scores.
     """
 
-    # 1. Fetch historical market data
+    # 1. Fetching historical market data
     ticker = yf.Ticker(symbol)
     data = ticker.history(period=period)
 
@@ -41,7 +41,7 @@ def generate_dataset(
 
     rows = []
 
-    # 2. Iterate over each trading day
+    # 2. Iterating over each trading day
     for i in range(len(data)):
         open_price = data["Open"].iloc[i]
         close_price = data["Close"].iloc[i]
@@ -52,13 +52,13 @@ def generate_dataset(
 
         change_percent = ((close_price - open_price) / open_price) * 100
 
-        # 3. Simulate sentiment (for now)
+        # 3. Simulating sentiment (for now)
         # NOTE: Real sentiment will come later
         sentiment_score = analyzer.polarity_scores(
             f"Market moved {change_percent:.2f} percent today"
         )["compound"]
 
-        # 4. Assign label using rule-based logic
+        # 4. Assigning label using rule-based logic
         label = classify_label(change_percent, sentiment_score)
 
         rows.append([
@@ -67,13 +67,13 @@ def generate_dataset(
             label
         ])
 
-    # 5. Create DataFrame
+    # 5. Creating DataFrame
     df = pd.DataFrame(
         rows,
         columns=["change_percent", "average_sentiment", "label"]
     )
 
-    # 6. Save dataset
+    # 6. Saving dataset
     df.to_csv(output_file, index=False)
 
     print(f"Dataset created with {len(df)} rows")
